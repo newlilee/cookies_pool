@@ -1,0 +1,1 @@
+# cookies pool for spider
