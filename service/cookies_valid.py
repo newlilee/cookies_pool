@@ -1,6 +1,4 @@
 import requests
-import json
-import time
 from config_center.base_consul import ConsulConfig
 from cache.redis_client import RedisClient
 
@@ -21,8 +19,8 @@ class CookieValid(object):
     def __init__(self, website: str):
         self.website = website
         keys = ['config/spider/cookies,pdd/data']
-        consul_client = ConsulConfig(keys, True)
-        self.valid_url = consul_client.__getattr__('cookie:valid:url')
+        self.consul_client = ConsulConfig(keys, True)
+        self.valid_url = self.consul_client.__getattr__('cookie:valid:url')
         self.redis = RedisClient(website)
 
     def validator(self, account: str, cookies: str):
@@ -48,10 +46,19 @@ class CookieValidator(CookieValid):
             cookie_data = cookie_to_map(cookies)
             response = requests.get(
                 valid_url, cookies=cookie_data, timeout=10, allow_redirects=False)
-            # TODO: 判断cookie失效规则
-            if response.status_code != 200:
-                print('account:', account, 'cookie invalid')
-                self.redis.del_cookie(self.website, account)
+            # 判断cookie失效规则
+            if response.status_code == 200:
+                if response.content is not None:
+                    content = str(response.content, encoding='utf-8')
+                    uid = self.consul_client.__getattr__(f'uid:{account}')
+                    if content.find(uid) == -1:
+                        print('account:', account, 'cookies invalid')
+                        self.redis.del_cookie(self.website, account)
+                    else:
+                        print('account:', account, 'cookies valid')
+                else:
+                    print('account:', account, 'cookies invalid')
+                    self.redis.del_cookie(self.website, account)
                 # TODO: 重新生成此账号的cookie
         except requests.ConnectionError as e:
             print('valid cookie error:', e)

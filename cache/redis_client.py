@@ -26,9 +26,8 @@ class RedisClient(object):
         """
         website = website.lower()
         account = account.lower()
-        ret = self.redis.hsetnx(website, account, value)
-        if ret == 1:
-            self.redis.expire(website, expire_time)
+        self.redis.hset(website, account, value)
+        self.redis.expire(website, expire_time)
 
     def get_cookie(self, website: str, account: str):
         """
