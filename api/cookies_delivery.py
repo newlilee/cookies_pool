@@ -1,5 +1,4 @@
 from flask import Flask, g
-from cache.redis_client import RedisClient
 
 app = Flask('cookies_pool')
 
@@ -18,7 +17,7 @@ def index():
 @app.route('/spider/cookies/get/<website>/<account>', methods=['GET'])
 def delivery(website: str, account: str):
     """
-    get cookie by website and account
+    get cookies by website and account
     :param website:
     :param account:
     :return:
@@ -30,12 +29,23 @@ def delivery(website: str, account: str):
 @app.route('/spider/cookies/get/random/<website>', methods=['GET'])
 def delivery_random(website: str):
     """
-    random get website's cookie
+    random get website's cookies
     :param website:
     :return:
     """
     g = get_conn(website)
     return getattr(g, website).get_random_cookie(website)
+
+
+@app.route('/spider/cookies/get/balance/<website>', methods=['GET'])
+def delivery_balance(website: str):
+    """
+    balance get website's cookies
+    :param website
+    :return:
+    """
+    g = get_conn(website)
+    return getattr(g, website).get_balance_cookie(website)
 
 
 if __name__ == '__main__':

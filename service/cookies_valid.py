@@ -1,6 +1,7 @@
 import requests
-from config_center.base_consul import ConsulConfig
+
 from cache.redis_client import RedisClient
+from config_center.base_consul import ConsulConfig
 
 
 def cookie_to_map(cookies: str):

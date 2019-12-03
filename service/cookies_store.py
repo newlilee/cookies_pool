@@ -1,7 +1,8 @@
 import json
 import re
-from config_center.base_consul import ConsulConfig
+
 from cache.redis_client import RedisClient
+from config_center.base_consul import ConsulConfig
 
 COOKIE_REGEX = '(.*)=([^;]*);?'
 
@@ -44,6 +45,7 @@ class CookiesStore(object):
         expire = account_cookie.get('cookie:expire')
         for account, cookies in account_cookie.items():
             if str(account).startswith('account:'):
+                print('cookies store account:', account)
                 formatted_cookie = cookies_format(cookies)
                 redis = RedisClient(website)
                 redis.set_cookie(website, account, formatted_cookie, expire)

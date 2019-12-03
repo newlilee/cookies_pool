@@ -1,5 +1,7 @@
 import random
+
 import redis
+
 from config_center.base_consul import ConsulConfig
 
 
@@ -26,8 +28,12 @@ class RedisClient(object):
         """
         website = website.lower()
         account = account.lower()
-        self.redis.hset(website, account, value)
-        self.redis.expire(website, expire_time)
+        ret = self.redis.hsetnx(website, account, value)
+        if ret == 1:
+            self.redis.expire(website, expire_time)
+            key = f'round:{website}'
+            self.redis.lpush(key, value)
+            self.redis.expire(key, expire_time)
 
     def get_cookie(self, website: str, account: str):
         """
@@ -67,3 +73,12 @@ class RedisClient(object):
         """
         website = website.lower()
         self.redis.hdel(website, account)
+
+    def get_balance_cookie(self, website: str):
+        """
+        balance get cookies
+        :param website:
+        :return:
+        """
+        key = f'round:{website}'
+        return self.redis.rpoplpush(key, key)

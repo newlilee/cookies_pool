@@ -1,7 +1,8 @@
-import consul
-import time
-import threading
 import json
+import threading
+import time
+
+import consul
 
 
 class ConsulConfig(object):
