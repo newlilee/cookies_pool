@@ -5,7 +5,7 @@ app = Flask('cookies_pool')
 
 def get_conn(website: str):
     if not hasattr(g, website):
-        setattr(g, website, eval('RedisClient' + '("' + website + '")'))
+        setattr(g, website, eval(f'RedisClient({website})'))
     return g
 
 
