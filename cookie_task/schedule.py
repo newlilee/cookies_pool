@@ -1,39 +1,37 @@
 import time
 from multiprocessing import Process
 
-from api.cookies_delivery import app
+from log.logger import get_logger
 from service.cookies_store import CookiesStore
-from service.cookies_valid import CookieValidator
+from service.pdd_cookies_valid import PddCookieValidator
+from service.tb_cookies_valid import TbCookieValidator
+
+logger = get_logger('cookies_schedule')
 
 
 class CookiePoolSchedule(object):
     @staticmethod
-    def api_run():
-        app.run(host='0.0.0.0', port=8090)
-
-    @staticmethod
-    def store_cookie(period=60):
-        store = CookiesStore()
+    def store_cookie(period=30):
         while True:
-            print('cookies store start.')
+            logger.info('cookies store start.')
             try:
-                store.cookies_store('pdd')
+                CookiesStore().cookies_store('pdd')
+                CookiesStore().cookies_store('tb')
                 time.sleep(period)
             except Exception as e:
-                print('store cookies error:', e)
+                logger.exception(f'store cookies e:{e}')
 
     @staticmethod
-    def valid_cookie(period=30):
+    def valid_cookie(period=60):
         while True:
-            print('cookies valid start.')
+            logger.info('cookies valid start.')
             try:
-                validator = CookieValidator('pdd')
-                validator.do_valid()
-                print('cookies valid finished.')
-                del validator
+                PddCookieValidator('pdd').do_valid()
+                TbCookieValidator('tb').do_valid()
+                logger.info('cookies valid finished.')
                 time.sleep(period)
             except Exception as e:
-                print('valid cookie error:', e)
+                logger.exception(f'valid cookies e:{e}')
 
     def run(self):
         # store cookie
@@ -43,7 +41,3 @@ class CookiePoolSchedule(object):
         # valid process
         valid_process = Process(target=CookiePoolSchedule.valid_cookie)
         valid_process.start()
-
-        # api process
-        api_process = Process(target=CookiePoolSchedule.api_run)
-        api_process.start()
