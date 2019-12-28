@@ -1,3 +1,3 @@
-# cookies pool for spider
+# cookies pool
 use consul store cookies config
-use redis store valid cookies, support random cookies, banlance get cookies(use redis loop queue)
+use redis store valid cookies, support random cookies, balance get cookies(use redis loop queue)
