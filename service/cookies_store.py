@@ -30,7 +30,7 @@ def cookies_format(cookie: str):
     return None
 
 
-class CookiesStore(object):
+class CookiesStore:
     def __init__(self):
         cookie_keys = ['config/spider/cookies,pdd/data']
         self.cookie_config = ConsulConfig(cookie_keys, True)

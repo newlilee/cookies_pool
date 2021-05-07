@@ -9,7 +9,7 @@ from service.tb_cookies_valid import TbCookieValidator
 logger = get_logger('cookies_schedule')
 
 
-class CookiePoolSchedule(object):
+class CookiePoolSchedule:
     @staticmethod
     def store_cookie(period=30):
         while True:

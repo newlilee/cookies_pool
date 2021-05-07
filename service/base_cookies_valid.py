@@ -4,7 +4,7 @@ from cache.redis_client import RedisClient
 from config_center.base_consul import ConsulConfig
 
 
-class CookieValid(object):
+class CookieValid:
     def __init__(self, website: str):
         self.website = website
         # website_keys = ['config/spider/cookies,pdd,dev/data',

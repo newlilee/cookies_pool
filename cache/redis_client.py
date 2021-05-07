@@ -6,7 +6,7 @@ import redis
 from config_center.conf import REDIS_CONF
 
 
-class RedisClient(object):
+class RedisClient:
     def __init__(self, website: str):
         self.host = REDIS_CONF.get('host')
         self.port = REDIS_CONF.get('port')

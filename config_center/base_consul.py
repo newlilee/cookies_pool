@@ -2,10 +2,11 @@ import json
 import threading
 import time
 
-import consul
+from consul import Consul
+from consul import Timeout
 
 
-class ConsulConfig(object):
+class ConsulConfig:
     def __init__(self, keys: list, watch: bool, interval=5):
         """
         init consul client
@@ -27,13 +28,13 @@ class ConsulConfig(object):
         监听consul配置变更
         :param key: consul中预先配置的key
         """
-        c = consul.Consul()
+        c = Consul()
         index = None
         try:
             index, data = c.kv.get(key, index=index)
             config = str(data['Value'], encoding='utf-8')
             self.config_dict = json.loads(config)
-        except consul.Timeout:
+        except Timeout:
             self.config_dict[key] = None
 
     def consul_config_watch(self, key: str):
@@ -64,13 +65,13 @@ class ConsulConfig(object):
         根据key取consul配置，不监听配置变化
         :param key: consul中预先配置的key
         """
-        c = consul.Consul()
+        c = Consul()
         try:
             index = None
             index, data = c.kv.get(key, index=index)
             config = str(data['Value'], encoding='utf-8')
             self.config_dict = json.loads(config)
-        except consul.Timeout:
+        except Timeout:
             return None
 
     def __getattr__(self, item: str):
